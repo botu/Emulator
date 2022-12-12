@@ -1,5 +1,9 @@
 package ru.pav.emulator.service.scheduller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import jdk.jfr.ContentType;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -45,7 +49,8 @@ public class EmulatorService {
 //    }
 
 
-    @Scheduled(fixedRate = 2000L)
+   // @ConditionalOnProperty("from.1")
+  //  @Scheduled(fixedRate = 200L)
     @Async
     public void process02()
     {
@@ -78,6 +83,34 @@ public class EmulatorService {
             e.printStackTrace();
         }
         }
+
+
+    @Scheduled(fixedRate = 2000L)
+    @Async
+    public void process03()
+    {
+        System.out.println("чего нибудь json");
+        RestTemplateBuilder builder = new RestTemplateBuilder();
+        RestTemplate template = builder.build();
+
+
+        ClientModelList body = generateClientModelList();
+        try {
+            final ClientModelList result = new ClientModelList();
+            System.out.println("begin");
+            String clientsList = Files.readString(Path.of("/Users/borisov-ty/develope/Emulator/src/main/resources/test.json"));
+
+
+            System.out.println("finish");
+            HttpEntity<String> request = new HttpEntity(clientsList);
+
+
+            template.exchange("http://localhost:8080/listString", HttpMethod.POST,request,String.class);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private ClientModelList generateClientModelList() {
         ClientModelList result = new ClientModelList();
