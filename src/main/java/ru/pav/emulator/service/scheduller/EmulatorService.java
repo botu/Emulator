@@ -6,11 +6,15 @@ import jdk.jfr.ContentType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.function.ServerRequest;
 import ru.pav.emulator.model.ClientModelList;
 import ru.pav.emulator.model.Clients;
 import ru.pav.emulator.model.Tariff;
@@ -21,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -102,10 +107,12 @@ public class EmulatorService {
 
 
             System.out.println("finish");
-            HttpEntity<String> request = new HttpEntity(clientsList);
+            HttpHeaders header = new HttpHeaders();
+            header.add("Content-type",MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<String> request = new HttpEntity(clientsList,header);
 
 
-            template.exchange("http://localhost:8080/listString", HttpMethod.POST,request,String.class);
+            template.exchange("http://localhost:8080/list", HttpMethod.POST,request,String.class);
 
         } catch (IOException e) {
             e.printStackTrace();
